@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import config from '../../config'
 
 
 export default class Create extends Component {
@@ -6,12 +7,35 @@ export default class Create extends Component {
     super(props)
       this.state = {
         
-        showBefore: true
+        showBefore: true,
+        submitted: false,
+        count: 0
 
       }
     }
 
+    intervalRefresh = () => {
+      this.interval = setInterval(() => {
+        this.setState({
+          count: this.state.count + 1
+        })
+      }, 1000)
+    }
 
+    timer = () => {
+      if (this.state.count === 0) {
+        return '3 seconds'
+      }
+      else if (this.state.count === 1) {
+        return '2 seconds'
+      }
+      else if (this.state.count === 2) {
+        return '1 second'
+      }
+      else if (this.state.count >= 3) {
+        window.location.reload(true)
+      }
+    }
 
     handleSubmit = (e) => {
       e.preventDefault()
@@ -45,16 +69,17 @@ export default class Create extends Component {
       const generatedMonster = { base_setting, monster_name, climate, frequency, organization, activity, diet, intelligence, 
       treasure, alignment, appearing, ac, movement, hd, thac0, attacks, damage, special_attack, special_defense, magic_resistance, size, 
     morale, xp, summary, habitat, ecology}
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          generatedMonster
-        )
-      }
-      fetch('http://localhost:8000/api', requestOptions)
+      console.log(generatedMonster)
+      fetch(`${config.API_ENDPOINT}/`,  
+      {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        generatedMonster
+      )})
         .then(response => response.json())
-        .then(window.location.reload(true))
+        .then(this.setState({submitted: true}))
+        .then(this.intervalRefresh())
   
         .catch(console.error)
     }
@@ -92,6 +117,7 @@ export default class Create extends Component {
   
 
   showHide = () => {
+    if (this.state.submitted === false){
     
     return <>
         <div className='createWrapper'>
@@ -212,12 +238,22 @@ export default class Create extends Component {
     </form>
     </div>
     </>
+    }
+    else if (this.state.submitted === true) {
+      return <>
+      <div className='createWrapper'>
+      <h2>Adding Monster...</h2>
+      <p>Estimated Time: {this.timer()}</p>
+      </div>
+      </>
+    }
   }
 
 
   render() {
     return(
       <>
+      
       {this.showHide()}
       
       

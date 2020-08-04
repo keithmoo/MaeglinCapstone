@@ -27,7 +27,7 @@ export default class App extends Component {
               this.setState({
                 monsters: [{
                   base_setting: "Error",
-                  monster_name: "Error Monster",
+                  monster_name: "Heroku takes 20 seconds to warm up, refresh in a few seconds and it should be working",
                   climate: "Error Pages",
                   frequency: "Unfortunately common",
                   organization: "solitary",
